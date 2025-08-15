@@ -10,20 +10,11 @@ from views.filter_view import FilterView
 from controllers.settings_controller import SettingsController
 from models.settings_model import SettingsModel
 
-def load_stylesheet():
-    try:
-        with open("assets/style.qss", "r") as f:
-            return f.read()
-    except Exception as e:
-        print(f"Failed to load style.qss: {e}")
-        return ""
-
 class MainWindow(QMainWindow):
     go_another_view = pyqtSignal()  # (unused; keep or remove)
 
     def __init__(self):
         super().__init__()
-        self.setStyleSheet(load_stylesheet())
         self.setWindowTitle("Creepy Message Detector")
         self.resize(800, 600)
 

@@ -11,6 +11,7 @@ class MainView(QWidget):
         super().__init__()
         self.setup_ui()
         self.connect_buttons()
+        self.current_image_path = None  # To store the path of the uploaded image
 
     def setup_ui(self):
         layout = QVBoxLayout()
@@ -183,6 +184,7 @@ class MainView(QWidget):
         filepath, _ = QFileDialog.getOpenFileName(self, "Upload Image", "", "Images (*.png *.jpg *.jpeg *.bmp)")
         if filepath:
             # Handle the image upload logic here
+            self.current_image_path = filepath  # Store the path for later use
             print(f"Image uploaded: {filepath}")
             pixmap = QPixmap(filepath)
             scaled_pixmap = pixmap.scaled(
@@ -222,6 +224,7 @@ class MainView(QWidget):
         self.imagebox_preview.setText("No image uploaded")
         self.image_remove.hide()
         self.imagebox_upload.show()
+        self.current_image_path = None
         self.handle_image()
 
     def connect_buttons(self):
