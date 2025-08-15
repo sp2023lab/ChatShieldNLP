@@ -9,6 +9,11 @@ from controllers.detection_controller import DetectionController
 from models.detection_model import DetectionModel 
 from assets.tesseract_path_config import detect_tesseract_path
 
+# For github do the following:
+# 1. git add .
+# 2. git commit -m "your message"
+# 3. git push origin main
+
 tesseract_path = detect_tesseract_path()
 
 if __name__ == "__main__":
