@@ -15,6 +15,7 @@ from assets.tesseract_path_config import detect_tesseract_path
 # 3. git push origin main
 
 tesseract_path = detect_tesseract_path()
+print(f"Detected Tesseract path: {tesseract_path}")
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

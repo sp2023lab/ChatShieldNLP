@@ -1,44 +1,43 @@
+# assets/tesseract_path_config.py
 import os
 import platform
 
-# Constants
-DEFAULT_TESSERACT_PATH = r"C:\Program Files\Tesseract-OCR\tesseract.exe"  # Windows default
+ENV_VAR = "TESSERACT_PATH"
 
-def detect_tesseract_path() -> str | None:
-    """
-    Tries to find the tesseract executable based on OS.
-    Returns full path if found, else None.
-    """
-    system = platform.system()
+COMMON_WINDOWS = [
+    r"C:\Users\shyam\AppData\Local\Programs\Tesseract-OCR\tesseract.exe",  # your install
+    r"C:\Program Files\Tesseract-OCR\tesseract.exe",
+    r"C:\Program Files (x86)\Tesseract-OCR\tesseract.exe",
+    r"C:\Tesseract-OCR\tesseract.exe",
+]
 
-    candidates = []
+COMMON_MAC = [
+    "/opt/homebrew/bin/tesseract",
+    "/usr/local/bin/tesseract",
+    "/usr/bin/tesseract",
+]
 
-    if system == "Windows":
-        candidates = [
-            DEFAULT_TESSERACT_PATH,
-            r"C:\Program Files (x86)\Tesseract-OCR\tesseract.exe",
-            r"C:\Tesseract-OCR\tesseract.exe"
-        ]
-    elif system == "Darwin":  # macOS
-        candidates = [
-            "/opt/homebrew/bin/tesseract",
-            "/usr/local/bin/tesseract"
-        ]
-    elif system == "Linux":
-        candidates = [
-            "/usr/bin/tesseract",
-            "/usr/local/bin/tesseract"
-        ]
-
-    for path in candidates:
-        if is_valid_tesseract_path(path):
-            return path
-
-    return None
-
+COMMON_LINUX = [
+    "/usr/bin/tesseract",
+    "/usr/local/bin/tesseract",
+]
 
 def is_valid_tesseract_path(path: str) -> bool:
-    """
-    Checks if given path exists and is executable.
-    """
     return isinstance(path, str) and os.path.isfile(path) and os.access(path, os.X_OK)
+
+def detect_tesseract_path() -> str | None:
+    # 1) environment variable wins
+    env_path = os.environ.get(ENV_VAR)
+    if env_path and is_valid_tesseract_path(env_path):
+        return env_path
+
+    # 2) OS-specific candidates
+    system = platform.system()
+    candidates = COMMON_WINDOWS if system == "Windows" else COMMON_MAC if system == "Darwin" else COMMON_LINUX
+
+    for p in candidates:
+        if is_valid_tesseract_path(p):
+            return p
+
+    # 3) give up
+    return None
