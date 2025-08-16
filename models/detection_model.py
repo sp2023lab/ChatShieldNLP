@@ -8,18 +8,26 @@ from utils.text_utils import normalize_text  # keep using your shared normalizer
 def _despace_and_deleet(s: str) -> str:
     if not s:
         return s
-    # IMPORTANT: do NOT include \s here; we only remove . _ - between letters
+    # remove . _ - inside words only (keep spaces!)
     s = re.sub(r'(?<=\w)[\.\-_]+(?=\w)', '', s)
 
-    # leetspeak mapping
+    # leetspeak mapping — IMPORTANT: no '!' -> 'i' here
     s = s.translate(str.maketrans({
-        '0':'o','3':'e','4':'a','1':'i','5':'s','7':'t','!':'i','@':'a','$':'s'
+        '0':'o','3':'e','4':'a','1':'i','5':'s','7':'t','@':'a','$':'s'
     }))
+
+    # common “s3nd” case already handled by 3->e above; this is optional:
+    # s = re.sub(r'\bs3nd\b', 'send', s, flags=re.IGNORECASE)
 
     # collapse 3+ repeats to 2 (plzzzz -> plzz)
     s = re.sub(r'(.)\1{2,}', r'\1\1', s)
 
+    # strip trailing punctuation that can break word boundaries after media words
+    # e.g., "pic!!!" -> "pic", "photo??" -> "photo"
+    s = re.sub(r'([a-z])([!?.,;:]+)(?=\s|$)', r'\1', s, flags=re.IGNORECASE)
+
     return s
+
 
 # Canonical name -> (compiled regex, weight)
 RX: Dict[str, Tuple[re.Pattern, float]] = {}
