@@ -69,7 +69,7 @@ def _compile_patterns() -> None:
 _compile_patterns()
 
 class DetectionModel:
-    def __init__(self, confidence_threshold: float = 0.70):
+    def __init__(self, confidence_threshold: float = 0.55):
         self.confidence_threshold = float(confidence_threshold)
 
     def _preprocess(self, text: str) -> str:

@@ -68,5 +68,5 @@ class DetectionController(QObject):
         if intensity == "easy":
             return True
         elif intensity == "medium":
-            return score >= 0.55
+            return score >= 0.30
         return True
