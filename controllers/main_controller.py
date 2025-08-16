@@ -18,6 +18,7 @@ class MainController:
 
         self._analyzing = None
         self._last_image_path = None
+        self.wired = False
 
         self.connect_views()
         self.settings_controller.load_settings()  # Apply initial theme
@@ -51,6 +52,7 @@ class MainController:
         self.settings_controller.apply_styles()
 
     def on_analyze_click(self):
+        print("[analyze] clicked")
         text = self.main_view.textbox_box.toPlainText().strip()
         pix = self.main_view.imagebox_preview.pixmap()
         self.app_state.message_text = text
@@ -98,7 +100,31 @@ class MainController:
         self.detection_controller.analyze_text(text)
 
     def on_detection_result(self, label, score, phrases):
+        print("[detect] clicked")
+        REASONS = {
+            "ask_send_pic":     "Asked you to send a picture",
+            "ask_nudes_short":  "Asked for nudes",
+            "explicit_terms":   "Explicit sexual terms",
+            "coercion":         "Guilt/pressure",
+            "over_persistence": "Overly persistent",
+            "flirt":            "Flirtatious opener",
+        }
+
         self._close_analyzing()
+
+        if not self.detection_controller.apply_intensity_filter(label, score, phrases):
+            self.show_result_popup("No issues detected under current filter.")
+            return
+
+        thresh = self.detection_controller._threshold_for_intensity()
+        display_label = "Creepy" if score >= thresh else "Normal"
+
+        human = [REASONS.get(p, p) for p in (phrases or [])]
+        summary = f"Label: {display_label}\nScore: {score:.2f}\n"
+        if human:
+            summary += "Matched: " + ", ".join(human)
+        self.show_result_popup(summary)
+
 
         # Gate on intensity threshold
         if not self.detection_controller.apply_intensity_filter(label, score, phrases):
