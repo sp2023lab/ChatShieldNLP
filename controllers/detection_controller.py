@@ -63,10 +63,15 @@ class DetectionController(QObject):
                 self.worker.wait()
         self._cleanup()
 
+    def _threshold_for_intensity(self) -> float:
+        intensity = (getattr(self.app_state, "intensity", "easy") or "easy").strip().lower()
+        thresholds = {
+            "easy":   0.55,
+            "medium": 0.30,
+        }
+        return thresholds.get(intensity, 0.55)
+
     def apply_intensity_filter(self, label, score, phrases) -> bool:
-        intensity = getattr(self.app_state, "intensity", "easy")
-        if intensity == "easy":
-            return True
-        elif intensity == "medium":
-            return score >= 0.30
-        return True
+        thresh = self._threshold_for_intensity()
+        print(f"[filter] threshold={thresh:.2f} score={score:.2f}")
+        return score >= thresh

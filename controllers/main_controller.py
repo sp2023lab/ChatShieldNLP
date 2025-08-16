@@ -100,12 +100,16 @@ class MainController:
     def on_detection_result(self, label, score, phrases):
         self._close_analyzing()
 
-        # NOTE: pass score here (your old call didn’t)
+        # Gate on intensity threshold
         if not self.detection_controller.apply_intensity_filter(label, score, phrases):
             self.show_result_popup("No issues detected under current filter.")
             return
 
-        summary = f"Label: {label}\nScore: {score:.2f}\n"
+        # Compute the label to DISPLAY using the active intensity’s threshold
+        thresh = self.detection_controller._threshold_for_intensity()
+        display_label = "Creepy" if score >= thresh else "Normal"
+
+        summary = f"Label: {display_label}\nScore: {score:.2f}\n"
         if phrases:
             summary += "Matched: " + ", ".join(phrases)
         self.show_result_popup(summary)
@@ -131,6 +135,6 @@ class MainController:
         dlg.exec()
 
     def _on_filter_back(self):
-        chosen = self.filter_view.get_selected_intensity() or "easy"
+        chosen = (self.filter_view.get_selected_intensity() or "easy").strip().lower()
         self.app_state.intensity = chosen
         self.stacked_widget.setCurrentWidget(self.main_window.main_view)

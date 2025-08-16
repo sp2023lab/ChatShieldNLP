@@ -105,5 +105,5 @@ class DetectionModel:
             if sc > best_score:
                 best_score, best_matches = sc, names
 
-        label = "Creepy" if best_score >= self.confidence_threshold else "Normal"
+        label = "Creepy message. Immediately block!" if best_score >= self.confidence_threshold else "Normal"
         return label, best_score, best_matches
