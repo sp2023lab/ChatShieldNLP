@@ -67,4 +67,6 @@ class DetectionController(QObject):
         intensity = getattr(self.app_state, "intensity", "easy")
         if intensity == "easy":
             return True
-        return not (label == "Creepy" and score < 0.75)
+        elif intensity == "medium":
+            return score >= 0.55
+        return True

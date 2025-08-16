@@ -1,13 +1,22 @@
 import re
+import unicodedata
 
 def normalize_text(text: str) -> str:
-    text = text.lower()
-    text = text.replace('\n', ' ').replace('\t', ' ')
-    text = re.sub(r'[^\x00-\x7F]+', '', text)
-    text = " ".join(text.split())
-    text = text.strip()
-    print(f"Here is the text {text}")
-    return text
+    if not text:
+        return ""
+    # lower + NFKC
+    t = unicodedata.normalize("NFKC", text).lower()
+
+    # map curly apostrophes etc. to plain ascii (helps your “don’t” cases)
+    t = t.replace("’", "'").replace("‘", "'").replace("“", '"').replace("”", '"')
+
+    # remove control chars except whitespace
+    t = re.sub(r"[^\S\r\n\t ]", "", t)  # keep spaces/tabs/newlines
+
+    # collapse any whitespace runs to a single space, keep spaces!
+    t = re.sub(r"\s+", " ", t)
+
+    return t.strip()
 
 def tokenize(text: str) -> list[str]:
     normalized = normalize_text(text)
