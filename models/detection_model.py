@@ -26,6 +26,12 @@ def _despace_and_deleet(s: str) -> str:
     # e.g., "pic!!!" -> "pic", "photo??" -> "photo"
     s = re.sub(r'([a-z])([!?.,;:]+)(?=\s|$)', r'\1', s, flags=re.IGNORECASE)
 
+    # --- lightweight typo fixes (additions) ---
+    # 'nakd' / 'nakde' -> 'naked'
+    s = re.sub(r"\bnakd[e]?\b", "naked", s, flags=re.IGNORECASE)
+    # common OCR: 'snow you' -> 'now you'
+    s = re.sub(r"\bsnow\s+you\b", "now you", s, flags=re.IGNORECASE)
+
     return s
 
 
@@ -42,23 +48,38 @@ def _compile_patterns() -> None:
 
     # Up to 3 filler tokens between verb and media word: (?:\s+\w+){0,3}?
     RX = {
-        # Sexual requests (high)
+        # --- existing patterns (keep) ---
         "ask_send_pic": (C(r"""
             \b(?:send|share|show)\b
-            (?:.{0,40}?)                             # allow up to ~40 chars of anything (incl. 'me ur', emojis, punctuation)
+            (?:.{0,40}?)
             \b(?:pic|pics|picture|pictures|photo|photos|image|images|selfie|selfies|nude|nudes)\b
         """), 0.55),
 
         "ask_nudes_short": (C(r"""
-            \bsend(?:\s+\w+){0,2}?\s+\b(nude|nudes)\b
+            \bsend(?:\s+\w+){0,2}?\s+\b(nude|nudes|naked)\b
         """), 0.55),
 
-        # Explicit sexual terms (med-high)
+        # Expanded explicit vocabulary (fires per-occur; see step 2)
         "explicit_terms": (C(r"""
-            \b(boobs?|bobs|tits?|nipple|vegana|vagina|horny|hard|sexy)\b
+            \b(
+                boobs?|bobs|tits?|nipple[s]?|nipples|
+                pussy|vagina|clit|cock|dick|penis|
+                horny|hard|sexy|moan(?:s|ing)?|
+                suck|lick|finger(?:ing)?|cum|blowjob|bj|anal|fuck(?:ing)?
+            )\b
         """), 0.45),
 
-        # Coercion / persistence (medium)
+        # NEW: sexual size inquiry
+        "size_inquiry": (C(r"""
+            \bhow\s+big\s+is\s+(?:your|ur)\s+(?:pussy|boobs?|tits?|dick|cock)\b
+        """), 0.45),
+
+        # NEW: abuse/insults
+        "abuse_terms": (C(r"""
+            \b(bitch|slut|whore|cunt)\b
+        """), 0.30),
+
+        # Keep your existing coercion/over_persistence/flirt
         "coercion": (C(r"""
             \b(please\s+don'?t\s+ignore\s+me|you\s+don'?t\s+love\s+me\??|just\s+one\s+picture\s+please)\b
         """), 0.35),
@@ -67,7 +88,6 @@ def _compile_patterns() -> None:
             \b(i\s*(?:am|'?m)\s*lonely|please\s*talk\s*to\s*me|can\s*i\s*be\s*your\s*friend)\b
         """), 0.35),
 
-        # Flirt / romantic openers (lower)
         "flirt": (C(r"""
             \b(hi\s*dear|hi\s*beautiful|hey\s*(?:baby|babe))\b
         """), 0.25),
@@ -75,6 +95,12 @@ def _compile_patterns() -> None:
 
 # compile at import
 _compile_patterns()
+
+COUNTED = {
+    # pattern_name: (per_hit_weight, cap_for_this_pattern)
+    "explicit_terms": (0.12, 0.84),   # ~7 explicit terms to reach 0.84
+    "abuse_terms":    (0.20, 0.40),   # two insults max out at 0.40
+}
 
 class DetectionModel:
     def __init__(self, confidence_threshold: float = 0.45):
@@ -88,15 +114,21 @@ class DetectionModel:
         return t
 
     def _score_text(self, t: str) -> Tuple[float, List[str]]:
-        print("RX size:", len(RX), "text:", t)
         score = 0.0
         matched: List[str] = []
+
         for name, (pat, weight) in RX.items():
-            if pat.search(t):
-                print(f"Matched: {name} with weight {weight} in text: {t}")
-                matched.append(name)
-                score += weight
-        print(f"Score for '{t}': {score}, matched: {matched}")
+            if name in COUNTED:
+                per_hit, cap = COUNTED[name]
+                hits = pat.findall(t)
+                if hits:
+                    matched.append(name)
+                    score += min(cap, per_hit * len(hits))
+            else:
+                if pat.search(t):
+                    matched.append(name)
+                    score += weight
+
         return min(1.0, score), matched
 
     def get_result(self, text: str):
