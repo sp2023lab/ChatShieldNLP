@@ -16,9 +16,6 @@ def _despace_and_deleet(s: str) -> str:
         '0':'o','3':'e','4':'a','1':'i','5':'s','7':'t','@':'a','$':'s'
     }))
 
-    # common “s3nd” case already handled by 3->e above; this is optional:
-    # s = re.sub(r'\bs3nd\b', 'send', s, flags=re.IGNORECASE)
-
     # collapse 3+ repeats to 2 (plzzzz -> plzz)
     s = re.sub(r'(.)\1{2,}', r'\1\1', s)
 
