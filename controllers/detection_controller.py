@@ -37,6 +37,8 @@ class DetectionController(QObject):
         self.worker.start()
 
     def _on_done(self, label, score, phrases):
+        if hasattr(self.app_state, "add_score"):
+            self.app_state.add_score(score)
         self.detection_completed.emit(label, score, phrases)
 
     def _on_error(self, msg: str):
@@ -66,10 +68,10 @@ class DetectionController(QObject):
     def _threshold_for_intensity(self) -> float:
         intensity = (getattr(self.app_state, "intensity", "easy") or "easy").strip().lower()
         thresholds = {
-            "easy":   0.45,
+            "easy":   0.55,
             "medium": 0.30,
         }
-        return thresholds.get(intensity, 0.45)
+        return thresholds.get(intensity, 0.55)
 
     def apply_intensity_filter(self, label, score, phrases) -> bool:
         thresh = self._threshold_for_intensity()
