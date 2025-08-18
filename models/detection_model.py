@@ -3,7 +3,7 @@ from __future__ import annotations
 import re
 from typing import List, Tuple, Dict
 
-from utils.text_utils import normalize_text, fold_unicode_homoglyphs  # keep using your shared normalizer
+from utils.text_utils import normalize_text  # keep using your shared normalizer
 
 def _despace_and_deleet(s: str) -> str:
     if not s:
@@ -35,11 +35,6 @@ def _despace_and_deleet(s: str) -> str:
 # Canonical name -> (compiled regex, weight)
 RX: Dict[str, Tuple[re.Pattern, float]] = {}
 
-def fuzzy_letters(word: str, gap: str = r'[\W_]*', case_insensitive: bool = True) -> str:
-    parts = list(word)
-    return gap.join(map(re.escape, parts))
-
-
 def _compile_patterns() -> None:
     """Build regex library with flexible gaps."""
     global RX
@@ -47,10 +42,6 @@ def _compile_patterns() -> None:
 
     def C(p: str) -> re.Pattern:
         return re.compile(p, flags)
-
-    critical_terms = ['nude', 'nudes', 'pic', 'pics', 'pussy', 'cock', 'boobs', 'tits']
-    fuzzy_alts = "|".join(fuzzy_letters(w) for w in critical_terms)
-
 
     # Up to 3 filler tokens between verb and media word: (?:\s+\w+){0,3}?
     RX = {
@@ -62,24 +53,18 @@ def _compile_patterns() -> None:
         """), 0.55),
 
         "ask_nudes_short": (C(r"""
-            \bsend(?:\s+\w+){0,3}?\s+\b(nude|nudes|naked|nakde|nakd)\b
+            \bsend(?:\s+\w+){0,2}?\s+\b(nude|nudes|naked)\b
         """), 0.55),
-
-        "fuzzy_critical": (C(fr"\b(?:{fuzzy_alts})\b"), 0.40),
-
 
         # Expanded explicit vocabulary (fires per-occur; see step 2)
         "explicit_terms": (C(r"""
             \b(
-                boobs?|bobs|b00bs|tits?|t1ts|t!ts|nipple[s]?|nipples|
-                pussy|pusy|pussi|p\*ssy|vagina|vegana|clit|
-                cock|c0ck|dick|d1ck|penis|
+                boobs?|bobs|tits?|nipple[s]?|nipples|
+                pussy|vagina|vegana|clit|cock|dick|penis|
                 horny|hard|sexy|moan(?:s|ing)?|
-                suck|lick|finger(?:ing)?|cum|c\*m|
-                blowjob|bl0wjob|bj|anal|fuck(?:ing)?
+                suck|lick|finger(?:ing)?|cum|blowjob|bj|anal|fuck(?:ing)?
             )\b
         """), 0.45),
-
 
         # NEW: sexual size inquiry
         "size_inquiry": (C(r"""
@@ -103,45 +88,6 @@ def _compile_patterns() -> None:
         "flirt": (C(r"""
             \b(hi\s*dear|hi\s*beautiful|hey\s*(?:baby|babe))\b
         """), 0.25),
-
-        "harassment_threats": (C(r"""
-            \b(
-                kill \s* yourself   |  # "kill yourself", "killyourself", "k y s" handled below
-                k \s* y \s* s       |  # "kys" with optional spaces
-                i'?m \s+ going \s+ to \s+ kill \s+ you |
-                i \s* '?\s* ll \s+ (?:find|hunt) \s+ you |
-                rape \s+ you
-            )\b
-        """), 0.60),
-
-        "harassment_dox_stalk": (C(r"""
-            \b(
-                i \s+ know \s+ where \s+ you \s+ live |
-                (?:send|share) \s+ (?:your\s+)? (?:address|location) |
-                what \s+ is \s+ your \s+ address
-            )\b
-        """), 0.45),
-
-        "harassment_insults": (C(r"""
-            \b(bitch|slut|whore|cunt|skank|hoe|bastard|scum|trash)\b
-        """), 0.0),  # keep 0.0 so only COUNTED applies
-
-        "grooming_age": (C(r"""
-            \b(how\s+old\s+are\s+you|age\??|are\s+you\s+(?:mature|legal)|what'?s\s+your\s+age)\b
-        """), 0.45),
-
-        "grooming_parents": (C(r"""
-            \b(parents?\s+(?:home|there)|are\s+you\s+(?:alone|by\s+yourself))\b
-        """), 0.45),
-
-        "grooming_move_dm": (C(r"""
-            \b(add\s+me\s+on\s+(?:snap|snapchat|telegram|whatsapp)|dm\s+me\s+privately|private\s+chat)\b
-        """), 0.30),
-
-        "grooming_show_face": (C(r"""
-            \b(show\s+(?:your|ur)\s+face|face\s+reveal|turn\s+on\s+camera|cam\s+on)\b
-        """), 0.35),
-
     }
 
 # compile at import
@@ -159,8 +105,7 @@ class DetectionModel:
 
     def _preprocess(self, text: str) -> str:
         t0 = text
-        t = fold_unicode_homoglyphs(text)
-        t = normalize_text(t)          # step 1: lowercase, collapse whitespace, keep spaces
+        t = normalize_text(text)          # step 1: lowercase, collapse whitespace, keep spaces
         t = _despace_and_deleet(t)         # step 2: de-leet, remove separators inside tokens
         print("PRE:", repr(t0), "\nPOST:", repr(t))  # <-- add this debug here
         return t
@@ -168,23 +113,20 @@ class DetectionModel:
     def _score_text(self, t: str) -> Tuple[float, List[str]]:
         score = 0.0
         matched: List[str] = []
+
         for name, (pat, weight) in RX.items():
             if name in COUNTED:
                 per_hit, cap = COUNTED[name]
                 hits = pat.findall(t)
                 if hits:
                     matched.append(name)
-                    inc = min(cap, per_hit * len(hits))
-                    print(f"[COUNTED] {name}: hits={len(hits)} per={per_hit} cap={cap} +{inc:.2f}")
-                    score += inc
+                    score += min(cap, per_hit * len(hits))
             else:
                 if pat.search(t):
                     matched.append(name)
-                    print(f"[FIXED]   {name}: +{weight:.2f}")
                     score += weight
-        print(f"[TOTAL] score={score:.2f} matches={matched}")
-        return min(1.0, score), matched
 
+        return min(1.0, score), matched
 
     def get_result(self, text: str):
         if not text or not text.strip():
