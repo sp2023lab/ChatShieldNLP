@@ -6,7 +6,30 @@ Designed to be **lightweight, explainable, and offline** (no cloud/ML dependency
 
 ---
 
-## ✨ Features
+# creepdetectorNLP
+
+![Python](https://img.shields.io/badge/python-3.11+-blue)
+![PyQt6](https://img.shields.io/badge/GUI-PyQt6-brightgreen)
+![Platform](https://img.shields.io/badge/platform-Windows%2010%2B-lightgrey)
+![License](https://img.shields.io/badge/license-MIT-informational)
+
+Rule-based desktop application for detecting “creepy” or unsafe messages using NLP preprocessing + regex scoring.  
+Built with **PyQt6** GUI, **pytesseract** OCR, and lightweight rule weights.
+
+---
+
+## Demo
+
+![Homepage](docs/images/home.png)
+![Main View](docs/images/main.png)
+![Result Popup](docs/images/result.png)
+
+<!-- Optional -->
+<!-- ![Demo](docs/creepdetector-demo.gif) -->
+
+---
+
+## Features
 
 - **Input options**
   - Paste or type text
@@ -28,6 +51,31 @@ Designed to be **lightweight, explainable, and offline** (no cloud/ML dependency
 - Non‑blocking UI (QThread workers) with analyzing spinner + results dialog.
 - Customizable background color (persisted with QSettings).
 - Windows‑first setup with auto Tesseract path detection (fallback manual path).
+
+---
+
+## Quickstart
+
+```bash
+# 1) Clone & enter
+git clone https://github.com/sp2023lab/creepdetectorNLP.git
+cd creepdetectorNLP
+
+# 2) Create venv
+python -m venv venv
+# Windows
+venv\Scripts\activate
+# macOS/Linux
+# source venv/bin/activate
+
+# 3) Install deps
+pip install -r requirements.txt
+
+# 4) (Windows) Install Tesseract OCR:
+#   https://github.com/UB-Mannheim/tesseract/wiki
+
+# 5) Run
+python main.py
 
 ---
 
@@ -61,25 +109,3 @@ Activate your venv and run:
 pip install pytesseract Pillow
 
 ---
-
-## Quickstart
-```bash
-# 1) Clone & enter
-git clone https://github.com/sp2023lab/creepdetectorNLP.git
-cd creepdetectorNLP
-
-# 2) Create venv
-python -m venv venv
-# Windows
-venv\Scripts\activate
-# macOS/Linux
-# source venv/bin/activate
-
-# 3) Install deps
-pip install -r requirements.txt
-
-# 4) (Windows) Install Tesseract OCR:
-#   https://github.com/UB-Mannheim/tesseract/wiki
-
-# 5) Run
-python main.py
