@@ -53,7 +53,7 @@ def _compile_patterns() -> None:
         """), 0.55),
 
         "ask_nudes_short": (C(r"""
-            \bsend(?:\s+\w+){0,2}?\s+\b(nude|nudes|naked)\b
+            \bsend(?:\s+\w+){0,2}?\s+\b(nude|nudes|naked|nakde)\b
         """), 0.55),
 
         # Expanded explicit vocabulary (fires per-occur; see step 2)
