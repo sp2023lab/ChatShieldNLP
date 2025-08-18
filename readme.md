@@ -23,6 +23,20 @@ Designed to be **lightweight, explainable, and offline** (no cloud/ML dependency
   - Harassment (slurs, insults, threats, doxxing, stalking)  
 - **Conversation tracking** – recent scores are accumulated in `AppState`  
 - **Runs fully offline** once Tesseract is installed  
+- Text or image input (OCR via Tesseract).
+- Rule‑based “creepy” scoring with intensity filter (Easy=0.55, Medium=0.30).
+- Non‑blocking UI (QThread workers) with analyzing spinner + results dialog.
+- Customizable background color (persisted with QSettings).
+- Windows‑first setup with auto Tesseract path detection (fallback manual path).
+
+---
+
+## How it works (tl;dr)
+- Normalize text (unicode fold, leetspeak cleanup), then run regex rules.
+- Each rule contributes a weight; total score ∈ [0,1].
+- Intensity filter gates results: Easy≥0.55, Medium≥0.30.
+- OCR runs in a worker thread; UI stays responsive.
+
 
 ---
 
@@ -40,20 +54,32 @@ Designed to be **lightweight, explainable, and offline** (no cloud/ML dependency
 
 ---
 
-## 🚀 Setup (Windows PowerShell)
+## Troubleshooting
+**pytesseract not found**  
+Activate your venv and run:
+```bash
+pip install pytesseract Pillow
 
-```powershell
-# clone
-git clone https://github.com/<you>/nlp_creepdetector.git
-cd nlp_creepdetector
+---
 
-# create and activate venv
+## Quickstart
+```bash
+# 1) Clone & enter
+git clone https://github.com/sp2023lab/creepdetectorNLP.git
+cd creepdetectorNLP
+
+# 2) Create venv
 python -m venv venv
-.\venv\Scripts\Activate.ps1
+# Windows
+venv\Scripts\activate
+# macOS/Linux
+# source venv/bin/activate
 
-# install dependencies
-pip install -U pip
-pip install PyQt6 pytesseract Pillow
+# 3) Install deps
+pip install -r requirements.txt
 
-# run
+# 4) (Windows) Install Tesseract OCR:
+#   https://github.com/UB-Mannheim/tesseract/wiki
+
+# 5) Run
 python main.py
