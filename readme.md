@@ -23,7 +23,7 @@ Built with **PyQt6** GUI, **pytesseract** OCR, and lightweight rule weights.
 ![Homepage](docs/images/home.png)
 ![Main View](docs/images/main.png)
 ![Result Popup](docs/images/result.png)
-![Working Video](docs/images/demo.mp4)
+![Working Video](docs/videos/demo.mp4)
 
 <!-- Optional -->
 <!-- ![Demo](docs/creepdetector-demo.gif) -->
