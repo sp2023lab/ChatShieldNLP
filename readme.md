@@ -23,6 +23,7 @@ Built with **PyQt6** GUI, **pytesseract** OCR, and lightweight rule weights.
 ![Homepage](docs/images/home.png)
 ![Main View](docs/images/main.png)
 ![Result Popup](docs/images/result.png)
+![Working Video](docs/images/demo.mp4)
 
 <!-- Optional -->
 <!-- ![Demo](docs/creepdetector-demo.gif) -->
@@ -76,6 +77,7 @@ pip install -r requirements.txt
 
 # 5) Run
 python main.py
+```
 
 ---
 
@@ -84,7 +86,6 @@ python main.py
 - Each rule contributes a weight; total score ∈ [0,1].
 - Intensity filter gates results: Easy≥0.55, Medium≥0.30.
 - OCR runs in a worker thread; UI stays responsive.
-
 
 ---
 
@@ -107,5 +108,6 @@ python main.py
 Activate your venv and run:
 ```bash
 pip install pytesseract Pillow
+```
 
 ---
