@@ -20,9 +20,9 @@ Built with **PyQt6** GUI, **pytesseract** OCR, and lightweight rule weights.
 
 ## Demo
 
-![Homepage](docs/images/home.png)
-![Main View](docs/images/main.png)
-![Result Popup](docs/images/result.png)
+![Homepage](docs/images/Settings.png)
+![Main View](docs/images/Home.png)
+![Result Popup](docs/images/Main.png)
 ![Working Video](docs/videos/demo.mp4)
 
 ---
