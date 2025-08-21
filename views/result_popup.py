@@ -2,7 +2,18 @@ from PyQt6.QtWidgets import QDialog, QVBoxLayout, QLabel, QPushButton
 from PyQt6.QtCore import Qt
 
 class ResultPopup(QDialog):
+    """
+    Modal popup dialog for displaying the result of an analysis.
+
+    This class creates a dialog that shows the analysis result text and provides a close button.
+    It is used to inform the user of the outcome after processing a conversation or text.
+    """
     def __init__(self, result_text: str, parent=None):
+        """
+        Initializes the ResultPopup dialog.
+
+        Sets up the window title, size, result label, and close button with appropriate styles.
+        """
         super().__init__(parent)
         self.setWindowTitle("Analysis Result")
         self.setModal(True)

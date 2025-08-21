@@ -5,6 +5,12 @@ import os
 ALLOWED_EXTS = (".png", ".jpg", ".jpeg", ".bmp")
 
 def scale_pixmap_to_fit(path: str, max_width: int, max_height: int) -> QPixmap:
+    """
+    Loads an image from the given path and scales it to fit within the specified maximum width and height.
+
+    Maintains the aspect ratio and uses smooth transformation for better quality.
+    Returns an empty QPixmap if the path is invalid, the file does not exist, or the image cannot be loaded.
+    """
     print("scale_pixmap_to_fit called with path: {}, max_width: {}, max_height: {}".format(path, max_width, max_height))
     if not isinstance(path, str) or not os.path.exists(path):
         print("Invalid path or file does not exist.")
@@ -21,6 +27,11 @@ def scale_pixmap_to_fit(path: str, max_width: int, max_height: int) -> QPixmap:
     return pixmap.scaled(max_width, max_height, Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation)
 
 def is_valid_image(path: str) -> bool:
+    """
+    Checks if the provided path points to a valid image file.
+
+    Validates that the path is a string, the file exists, and the extension is one of the allowed image types.
+    """
     print("is_valid_image called with path: {}".format(path))
     if not isinstance(path, str):
         print("Invalid path type. Expected a string.")
@@ -32,6 +43,11 @@ def is_valid_image(path: str) -> bool:
     return path.lower().endswith(ALLOWED_EXTS)
 
 def cleanup_ocr_text(text: str) -> str:
+    """
+    Cleans up OCR-extracted text by removing unwanted characters and extra whitespace.
+
+    Replaces form feed and zero-width characters, collapses whitespace, and trims the result.
+    """    
     text = (text or "")
     text = text.replace("\x0c", " ")
     text = text.replace("\u200b", "").replace("\u200c", "").replace("\u200d", "")

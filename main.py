@@ -1,4 +1,11 @@
 # main.py
+"""
+Main entry point for the ChatShield application.
+
+This script initializes the QApplication, main window, and all core controllers and models.
+It detects the Tesseract OCR path, sets up the application state, and connects the UI and logic layers.
+Execution starts here when the application is launched.
+"""
 import sys
 from PyQt6.QtWidgets import QApplication
 from main_window import MainWindow

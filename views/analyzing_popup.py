@@ -2,7 +2,19 @@ from PyQt6.QtWidgets import QDialog, QVBoxLayout, QLabel, QProgressBar
 from PyQt6.QtCore import Qt
 
 class AnalyzingPopup(QDialog):
+    """
+    Modal popup dialog indicating that analysis is in progress.
+
+    This class creates a simple dialog with a label and an indeterminate progress bar
+    to inform the user that the conversation or text is being analyzed. It blocks interaction
+    with the main window until the analysis is complete.
+    """
     def __init__(self, parent=None):
+        """
+        Initializes the AnalyzingPopup dialog.
+
+        Sets up the window title, size, label, and progress bar with appropriate styles.
+        """
         super().__init__()
         self.setWindowTitle("Analyzing...")
         self.setModal(True)  # Block interaction with the main window

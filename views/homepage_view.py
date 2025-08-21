@@ -2,15 +2,31 @@ from PyQt6.QtWidgets import QWidget, QVBoxLayout, QLabel, QPushButton, QFrame
 from PyQt6.QtCore import Qt, pyqtSignal
 
 class HomepageView(QWidget):
+    """
+    View for the application's homepage.
+
+    This class provides the initial landing UI, displaying the app logo, title, and navigation buttons.
+    It allows users to navigate to the main analysis view or the settings/customization view.
+    """
     go_main = pyqtSignal()
     go_settings = pyqtSignal()
 
     def __init__(self):
+        """
+        Initializes the HomepageView.
+
+        Sets up the UI components, layouts, and connects button signals.
+        """
         super().__init__()
         self.setup_ui()
         self.connect_buttons()
 
     def setup_ui(self):
+        """
+        Sets up the layout and widgets for the homepage view.
+
+        Adds logo, title, navigation buttons, and arranges them with appropriate styles.
+        """        
         layout = QVBoxLayout()
         layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
@@ -59,5 +75,10 @@ class HomepageView(QWidget):
         self.setLayout(layout)
 
     def connect_buttons(self):
+        """
+        Connects navigation buttons to their respective signals.
+
+        Enables navigation to the main and settings views.
+        """
         self.main_button.clicked.connect(self.go_main.emit)
         self.settings_button.clicked.connect(self.go_settings.emit)

@@ -1,3 +1,11 @@
+"""
+Main application window for ChatShield.
+
+This class sets up the main window, manages all top-level views using a QStackedWidget,
+and initializes the settings controller and model. It handles basic navigation between
+views, applies the current theme, and delegates business logic to the MainController.
+"""
+
 # main_window.py
 from PyQt6.QtWidgets import QMainWindow, QStackedWidget
 from PyQt6.QtCore import pyqtSignal
@@ -11,9 +19,20 @@ from controllers.settings_controller import SettingsController
 from models.settings_model import SettingsModel
 
 class MainWindow(QMainWindow):
+    """
+    Main application window for ChatShield.
+
+    Manages the stacked views, initializes controllers and models, and handles navigation.
+    """
     go_another_view = pyqtSignal()  # (unused; keep or remove)
 
     def __init__(self):
+        """
+        Initializes the MainWindow.
+
+        Sets up the stacked widget, all views, the settings controller, and basic navigation.
+        Applies the current theme and sets the initial screen.
+        """
         super().__init__()
         self.setWindowTitle("ChatShieldNLP")
         self.resize(800, 600)
@@ -78,6 +97,11 @@ class MainWindow(QMainWindow):
     # If you want to keep a window-level hook for manual apply (not recommended),
     # you can re-enable this method and wire it — but MainController already handles it.
     def _on_apply_bg_color(self, color: str):
+        """
+        Applies the selected background color using the settings controller.
+
+        Handles errors if the color is invalid.
+        """
         try:
             self.settings_controller.save_settings(color)
             # Optionally reflect immediately in settings view buttons:

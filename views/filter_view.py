@@ -2,14 +2,30 @@ from PyQt6.QtWidgets import QWidget, QVBoxLayout, QLabel, QPushButton, QFrame, Q
 from PyQt6.QtCore import Qt, pyqtSignal
 
 class FilterView(QWidget):
+    """
+    View for selecting message filter intensity.
+
+    This class provides a UI for users to choose the detection sensitivity (Easy or Medium)
+    using radio buttons. It includes navigation controls and emits a signal to return to the main view.
+    """
     go_main = pyqtSignal()
 
     def __init__(self):
+        """
+        Initializes the FilterView.
+
+        Sets up the UI components, layouts, and connects button signals.
+        """
         super().__init__()
         self.setup_ui()
         self.connect_buttons()
 
     def setup_ui(self):
+        """
+        Sets up the layout and widgets for the filter selection view.
+
+        Adds logo, navigation button, title, radio buttons for intensity, and styles them appropriately.
+        """
         layout = QVBoxLayout()
         layout.setAlignment(Qt.AlignmentFlag.AlignTop)
 
@@ -76,6 +92,11 @@ class FilterView(QWidget):
         self.setLayout(layout)
 
     def get_selected_intensity(self):
+        """
+        Returns the currently selected intensity level.
+
+        Returns "easy", "medium", or None if no option is selected.
+        """
         if self.radio_easy.isChecked():
             return "easy"
         elif self.radio_medium.isChecked():
@@ -83,4 +104,9 @@ class FilterView(QWidget):
         return None
 
     def connect_buttons(self):
+        """
+        Connects the navigation button to emit the go_main signal.
+
+        Allows the user to return to the main view.
+        """
         self.main_button.clicked.connect(self.go_main.emit)

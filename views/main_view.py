@@ -3,17 +3,35 @@ from PyQt6.QtGui import QPixmap
 from PyQt6.QtCore import Qt, pyqtSignal
 
 class MainView(QWidget):
+    """
+    Main view for user input and analysis actions.
+
+    This class provides the primary UI for entering conversation text or uploading images,
+    and includes controls for navigation, filter selection, and triggering analysis.
+    It manages the layout, handles user interactions, and emits signals for navigation and actions.
+    """
     go_homepage = pyqtSignal()
     go_filter = pyqtSignal()
     go_analyze = pyqtSignal()
 
     def __init__(self):
+        """
+        Initializes the MainView.
+
+        Sets up the UI components, layouts, and connects button signals.
+        """
         super().__init__()
         self.setup_ui()
         self.connect_buttons()
         self.current_image_path = None  # To store the path of the uploaded image
 
     def setup_ui(self):
+        """
+        Sets up the layout and widgets for the main view.
+
+        Adds navigation, title, text input, image upload, and action buttons,
+        and arranges them with appropriate styles.
+        """
         layout = QVBoxLayout()
         layout.setAlignment(Qt.AlignmentFlag.AlignTop)
 
@@ -181,6 +199,11 @@ class MainView(QWidget):
         self.setLayout(layout)
 
     def upload_image(self):
+        """
+        Handles image upload action.
+
+        Opens a file dialog, loads and previews the image, and updates the UI accordingly.
+        """        
         filepath, _ = QFileDialog.getOpenFileName(self, "Upload Image", "", "Images (*.png *.jpg *.jpeg *.bmp)")
         if filepath:
             # Handle the image upload logic here
@@ -202,6 +225,11 @@ class MainView(QWidget):
             self.handle_text_change()
            
     def handle_text_change(self):
+        """
+        Handles changes in the text input box.
+
+        Shows or hides the image upload section based on whether text is present.
+        """        
         text = self.textbox_box.toPlainText().strip()
         if text:
             self.imagebox_wrapper.hide()
@@ -209,6 +237,11 @@ class MainView(QWidget):
             self.imagebox_wrapper.show()
 
     def handle_image(self):
+        """
+        Handles the display logic when an image is uploaded or removed.
+
+        Shows or hides the text input section and image controls as appropriate.
+        """
         pix = self.imagebox_preview.pixmap()
         if pix and not pix.isNull():
             self.textbox_wrapper.hide()
@@ -220,6 +253,9 @@ class MainView(QWidget):
             self.imagebox_upload.show()
 
     def clear_image(self):
+        """
+        Clears the uploaded image and resets the image preview and controls.
+        """
         self.imagebox_preview.clear()
         self.imagebox_preview.setText("No image uploaded")
         self.image_remove.hide()
@@ -228,6 +264,11 @@ class MainView(QWidget):
         self.handle_image()
 
     def connect_buttons(self):
+        """
+        Connects navigation and action buttons to their respective signals.
+
+        Enables interaction between the view and the rest of the application.
+        """
         self.homepage_button.clicked.connect(self.go_homepage.emit)
         self.filter_button.clicked.connect(self.go_filter.emit)
         self.analyze_button.clicked.connect(self.go_analyze.emit)
