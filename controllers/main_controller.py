@@ -102,12 +102,12 @@ class MainController:
     def on_detection_result(self, label, score, phrases):
         print("[detect] clicked")
         REASONS = {
-            "ask_send_pic":     "Asked you to send a picture",
-            "ask_nudes_short":  "Asked for nudes",
-            "explicit_terms":   "Explicit sexual terms",
-            "coercion":         "Guilt/pressure",
-            "over_persistence": "Overly persistent",
-            "flirt":            "Flirtatious opener",
+            "ask_send_pic":     "Requested personal images",
+            "ask_nudes_short":  "Requested sexually explicit images",
+            "explicit_terms":   "Use of sexually explicit terms",
+            "coercion":         "Coercive or pressuring language",
+            "over_persistence": "Excessive persistence",
+            "flirt":            "Unsolicited advances",
         }
 
         self._close_analyzing()
@@ -117,7 +117,7 @@ class MainController:
             return
 
         thresh = self.detection_controller._threshold_for_intensity()
-        display_label = "Creepy" if score >= thresh else "Normal"
+        display_label = "Inappropriate/Unsafe message" if score >= thresh else "Normal"
 
         human = [REASONS.get(p, p) for p in (phrases or [])]
         summary = f"Label: {display_label}\nScore: {score:.2f}\n"
