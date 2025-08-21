@@ -15,7 +15,7 @@ class MainWindow(QMainWindow):
 
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("Creepy Message Detector")
+        self.setWindowTitle("ChatShieldNLP")
         self.resize(800, 600)
 
         self.stacked_widget = QStackedWidget()
