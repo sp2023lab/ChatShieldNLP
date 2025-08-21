@@ -100,10 +100,28 @@ COUNTED = {
 }
 
 class DetectionModel:
+    """
+    Detection model for identifying inappropriate or 'creepy' messages using regex patterns.
+
+    This class preprocesses input text, applies a set of compiled regular expressions to detect
+    explicit, abusive, coercive, or flirtatious language, and computes a confidence score.
+    The model can be tuned with a confidence threshold to determine when a message is flagged.
+    """
     def __init__(self, confidence_threshold: float = 0.45):
+        """
+        Initializes the DetectionModel with a configurable confidence threshold.
+
+        The threshold determines the minimum score required to flag a message as 'creepy'.
+        """
         self.confidence_threshold = float(confidence_threshold)
 
     def _preprocess(self, text: str) -> str:
+        """
+        Preprocesses the input text for detection.
+
+        Normalizes the text (lowercase, whitespace), removes leetspeak and separators,
+        and applies lightweight typo corrections to improve detection accuracy.
+        """
         t0 = text
         t = normalize_text(text)          # step 1: lowercase, collapse whitespace, keep spaces
         t = _despace_and_deleet(t)         # step 2: de-leet, remove separators inside tokens
@@ -111,6 +129,12 @@ class DetectionModel:
         return t
 
     def _score_text(self, t: str) -> Tuple[float, List[str]]:
+        """
+        Applies all detection patterns to the preprocessed text and computes a score.
+
+        Returns a tuple of (score, matched pattern names). Some patterns are counted per hit
+        with a cap, while others are single-fire with fixed weights.
+        """
         score = 0.0
         matched: List[str] = []
 
@@ -129,6 +153,12 @@ class DetectionModel:
         return min(1.0, score), matched
 
     def get_result(self, text: str):
+        """
+        Runs the detection model on the provided text.
+
+        Splits text into lines, preprocesses each, scores them, and returns the highest scoring result.
+        Returns a label ('Creepy message...' or 'Normal'), the score, and the list of matched patterns.
+        """
         if not text or not text.strip():
             return "Normal", 0.0, []
 

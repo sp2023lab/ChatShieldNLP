@@ -7,7 +7,7 @@ from typing import Optional
 
 from PyQt6.QtCore import QObject, pyqtSignal, QThread
 
-# === use your utils ===
+# === use utils ===
 from utils.image_utils import is_valid_image, cleanup_ocr_text
 
 # Hard dependencies (installed in your venv): Pillow, pytesseract
@@ -29,20 +29,32 @@ except Exception:
 class OCRWorker(QThread):
     """
     QThread that runs pytesseract on a given image path.
-    Emits:
-      - ocr_done(str): cleaned OCR text
-      - ocr_error(str): formatted error message
+
+    This worker thread performs OCR on an image file using pytesseract.
+    It emits signals when OCR is complete or if an error occurs, allowing the main UI to remain responsive.
+    Handles image validation, Tesseract configuration, and interruption requests.
     """
     ocr_done = pyqtSignal(str)
     ocr_error = pyqtSignal(str)
 
     def __init__(self, image_path: str, tesseract_path: Optional[str] = None, lang: str = "eng", parent: Optional[QObject] = None):
+        """
+        Initializes the OCRWorker with the image path, optional Tesseract binary path, and language.
+
+        Sets up the worker for asynchronous OCR processing.
+        """
         super().__init__(parent)
         self.image_path = image_path
         self.tesseract_path = tesseract_path
         self.lang = lang
 
     def run(self):
+        """
+        Executes the OCR process in a separate thread.
+
+        Validates the image, configures Tesseract, performs OCR, and emits the result or error.
+        Handles interruption requests and various error scenarios gracefully.
+        """
         # Library presence checks (clear messages instead of stack traces)
         if pytesseract is None:
             self.ocr_error.emit("pytesseract is not installed. Run: pip install pytesseract Pillow")
@@ -103,14 +115,19 @@ class OCRWorker(QThread):
 class OCRController(QObject):
     """
     Orchestrates OCRWorker lifecycle.
-    Public signals:
-      - ocr_completed(str): cleaned text
-      - ocr_failed(str): error details
+
+    This controller manages the creation, execution, and cleanup of OCRWorker threads.
+    It provides a simple interface for running OCR and emits signals when OCR is complete or fails.
     """
     ocr_completed = pyqtSignal(str)
     ocr_failed = pyqtSignal(str)
 
     def __init__(self, tesseract_path: Optional[str] = None, lang: str = "eng", parent: Optional[QObject] = None):
+        """
+        Initializes the OCRController with optional Tesseract path and language.
+
+        Preconfigures Tesseract if a path is provided and prepares for OCR operations.
+        """
         super().__init__(parent)
         self.tesseract_path = tesseract_path
         self.lang = lang
@@ -121,6 +138,11 @@ class OCRController(QObject):
             pytesseract.pytesseract.tesseract_cmd = self.tesseract_path
 
     def run_ocr(self, image_path: str):
+        """
+        Starts OCR on the given image path in a worker thread.
+
+        Ensures only one OCR operation runs at a time and connects signals for result and error handling.
+        """
         # Avoid parallel runs
         if self.worker and self.worker.isRunning():
             return
@@ -132,6 +154,11 @@ class OCRController(QObject):
         self.worker.start()
 
     def cancel(self):
+        """
+        Cancels any ongoing OCR operation.
+
+        Requests interruption and termination of the worker thread if running, then cleans up resources.
+        """
         if self.worker and self.worker.isRunning():
             self.worker.requestInterruption()
             self.worker.quit()
@@ -143,12 +170,23 @@ class OCRController(QObject):
 
     # --- internal slots ---
     def _on_done(self, cleaned_text: str):
+        """
+        Internal slot: emits the ocr_completed signal with the cleaned OCR text.
+        """
         self.ocr_completed.emit(cleaned_text)
 
     def _on_error(self, message: str):
+        """
+        Internal slot: emits the ocr_failed signal with the error message.
+        """
         self.ocr_failed.emit(message)
 
     def _cleanup(self):
+        """
+        Cleans up the worker thread and disconnects all signals.
+
+        Ensures resources are released and the worker is properly deleted after completion.
+        """
         if self.worker:
             try:
                 self.worker.ocr_done.disconnect(self._on_done)

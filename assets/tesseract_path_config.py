@@ -23,9 +23,24 @@ COMMON_LINUX = [
 ]
 
 def is_valid_tesseract_path(path: str) -> bool:
+    """
+    Checks if the provided path is a valid Tesseract executable.
+
+    This function verifies that the given path is a string, points to an existing file,
+    and that the file is executable. It is used to ensure that the Tesseract binary
+    can be run from the specified location.
+    """
     return isinstance(path, str) and os.path.isfile(path) and os.access(path, os.X_OK)
 
 def detect_tesseract_path() -> str | None:
+    """
+    Attempts to automatically locate the Tesseract executable on the system.
+
+    The function first checks if the TESSERACT_PATH environment variable is set and valid.
+    If not, it searches through a list of common installation paths based on the current OS
+    (Windows, macOS, or Linux). If a valid executable is found, its path is returned.
+    If no valid path is found, the function returns None.
+    """
     # 1) environment variable wins
     env_path = os.environ.get(ENV_VAR)
     if env_path and is_valid_tesseract_path(env_path):
