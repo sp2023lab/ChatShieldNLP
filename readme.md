@@ -38,7 +38,7 @@ Built with **PyQt6** GUI, **pytesseract** OCR, and lightweight rule weights.
   - **Medium** (strict, ≥ 0.30)
 - **Categories covered**
   - Requests for images or sensitive content  
-  - Sexual/explicit vocabulary  
+  - NSFW/explicit vocabulary  
   - Coercion & manipulative persistence (“don’t ignore me”)  
   - Unsolicited advances/inappropriate openers  
   - Harassment (slurs, insults, threats, doxxing, stalking)  

@@ -103,8 +103,8 @@ class MainController:
         print("[detect] clicked")
         REASONS = {
             "ask_send_pic":     "Requested personal images",
-            "ask_nudes_short":  "Requested sexually explicit images",
-            "explicit_terms":   "Use of sexually explicit terms",
+            "ask_nudes_short":  "Requested NSFW explicit images",
+            "explicit_terms":   "Use of NSFW explicit terms",
             "coercion":         "Coercive or pressuring language",
             "over_persistence": "Excessive persistence",
             "flirt":            "Unsolicited advances",
