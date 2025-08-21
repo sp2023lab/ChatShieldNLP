@@ -14,7 +14,7 @@ class HomepageView(QWidget):
         layout = QVBoxLayout()
         layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        self.logo = QLabel("Creepy Message Detector")
+        self.logo = QLabel("ChatShield")
         self.logo.setStyleSheet("font-size: 32px; font-family: Inter; font-weight: 600; color: White; letter-spacing: 0.5px;")
 
         self.title = QLabel("Homepage")

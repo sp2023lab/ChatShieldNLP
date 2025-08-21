@@ -14,7 +14,7 @@ class SettingsView(QWidget):
         layout = QVBoxLayout()
         layout.setAlignment(Qt.AlignmentFlag.AlignTop)
 
-        self.logo = QLabel("Creepy Message Detector")
+        self.logo = QLabel("ChatShield")
         self.logo.setStyleSheet("font-size: 32px; font-family: Inter; font-weight: 600; color: white; letter-spacing: 0.5px;")
 
         self.homepage_button = QPushButton("<")

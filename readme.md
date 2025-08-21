@@ -1,19 +1,19 @@
-# Creepy Message Detector (PyQt6 + OCR)
+# ChatShieldNLP (PyQt6 + OCR)
 
-A desktop app to **detect creepy or harassing messages** in text or screenshots.  
+A desktop app to **detect inappropriate or unsafe messages** in text or screenshots.  
 Built with **PyQt6** for the GUI and **Tesseract OCR** for extracting text from images.  
 Designed to be **lightweight, explainable, and offline** (no cloud/ML dependency).
 
 ---
 
-# creepdetectorNLP
+# ChatShieldNLP
 
 ![Python](https://img.shields.io/badge/python-3.11+-blue)
 ![PyQt6](https://img.shields.io/badge/GUI-PyQt6-brightgreen)
 ![Platform](https://img.shields.io/badge/platform-Windows%2010%2B-lightgrey)
 ![License](https://img.shields.io/badge/license-MIT-informational)
 
-Rule-based desktop application for detecting “creepy” or unsafe messages using NLP preprocessing + regex scoring.  
+Rule-based desktop application for detecting inappropriate or unsafe messages using NLP preprocessing + regex scoring.  
 Built with **PyQt6** GUI, **pytesseract** OCR, and lightweight rule weights.
 
 ---
@@ -25,9 +25,6 @@ Built with **PyQt6** GUI, **pytesseract** OCR, and lightweight rule weights.
 ![Result Popup](docs/images/result.png)
 ![Working Video](docs/videos/demo.mp4)
 
-<!-- Optional -->
-<!-- ![Demo](docs/creepdetector-demo.gif) -->
-
 ---
 
 ## Features
@@ -35,20 +32,20 @@ Built with **PyQt6** GUI, **pytesseract** OCR, and lightweight rule weights.
 - **Input options**
   - Paste or type text
   - Upload a screenshot → OCR → analyze
-- **Scoring system** with transparent phrase matches (e.g., `ask_send_pic`, `explicit_terms`)
+- **Scoring system** with transparent phrase matches (e.g., `ask_send_pic`)
 - **Filter levels**
-  - **Easy** (strict, ≥ 0.55)
-  - **Medium** (lenient, ≥ 0.30)
+  - **Easy** (standard, ≥ 0.55)
+  - **Medium** (strict, ≥ 0.30)
 - **Categories covered**
-  - Requests for pics/nudes  
+  - Requests for images or sensitive content  
   - Sexual/explicit vocabulary  
-  - Coercion & persistence (“don’t ignore me”)  
-  - Flirt openers  
+  - Coercion & manipulative persistence (“don’t ignore me”)  
+  - Unsolicited advances/inappropriate openers  
   - Harassment (slurs, insults, threats, doxxing, stalking)  
 - **Conversation tracking** – recent scores are accumulated in `AppState`  
 - **Runs fully offline** once Tesseract is installed  
 - Text or image input (OCR via Tesseract).
-- Rule‑based “creepy” scoring with intensity filter (Easy=0.55, Medium=0.30).
+- Rule‑based safety scoring with intensity filter (Easy=0.55, Medium=0.30).
 - Non‑blocking UI (QThread workers) with analyzing spinner + results dialog.
 - Customizable background color (persisted with QSettings).
 - Windows‑first setup with auto Tesseract path detection (fallback manual path).
@@ -59,8 +56,8 @@ Built with **PyQt6** GUI, **pytesseract** OCR, and lightweight rule weights.
 
 ```bash
 # 1) Clone & enter
-git clone https://github.com/sp2023lab/creepdetectorNLP.git
-cd creepdetectorNLP
+git clone https://github.com/sp2023lab/ChatShieldNLP.git
+cd ChatShieldNLP
 
 # 2) Create venv
 python -m venv venv
